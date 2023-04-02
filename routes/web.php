@@ -32,4 +32,19 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
-Route::resource('users', App\Http\Controllers\UserController::class);
+Route::resource('users', App\Http\Controllers\UserController::class)->middleware('web');
+
+
+Route::resource('partients', App\Http\Controllers\PartientsController::class);
+
+
+Route::resource('diagnoses', App\Http\Controllers\DiagnosisController::class);
+
+
+Route::resource('treatments', App\Http\Controllers\TreatmentsController::class);
+
+
+Route::resource('payments', App\Http\Controllers\PaymentsController::class);
+
+
+Route::resource('services', App\Http\Controllers\ServicesController::class);
