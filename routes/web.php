@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect(route('partients.index'));
+//    return view('welcome');
 });
 
 Route::middleware([
@@ -33,24 +34,29 @@ Route::get('ajax-add-payment',[\App\Http\Controllers\PaymentsController::class, 
 
 Auth::routes();
 
+
+Route::group(['middleware' => 'auth'], function()
+{
+    Route::resource('users', App\Http\Controllers\UserController::class)->middleware('auth');
+
+    Route::resource('partients', App\Http\Controllers\PartientsController::class);
+
+    Route::get('partients/history/{id}',[\App\Http\Controllers\PartientsController::class, 'history'])->name('partients.history');
+
+
+    Route::resource('diagnoses', App\Http\Controllers\DiagnosisController::class);
+
+
+    Route::resource('treatments', App\Http\Controllers\TreatmentsController::class);
+
+
+    Route::resource('payments', App\Http\Controllers\PaymentsController::class);
+
+
+    Route::resource('services', App\Http\Controllers\ServicesController::class);
+});
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
-Route::resource('users', App\Http\Controllers\UserController::class)->middleware('verified');
 
-
-Route::resource('partients', App\Http\Controllers\PartientsController::class);
-
-Route::get('partients/history/{id}',[\App\Http\Controllers\PartientsController::class, 'history'])->name('partients.history');
-
-
-Route::resource('diagnoses', App\Http\Controllers\DiagnosisController::class);
-
-
-Route::resource('treatments', App\Http\Controllers\TreatmentsController::class);
-
-
-Route::resource('payments', App\Http\Controllers\PaymentsController::class);
-
-
-Route::resource('services', App\Http\Controllers\ServicesController::class);
