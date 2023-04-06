@@ -77,14 +77,22 @@ class Partients extends Model
         'name' => 'required|string|max:255',
 //        'status' => 'required|string|max:255',
 //        'avatar' => 'required|string|max:255',
-        'birth_day' => 'required|integer',
-        'province_id' => 'required|integer',
-        'district' => 'required|integer',
-        'ward' => 'required|integer',
-        'note' => 'required|string|max:255',
+//        'birth_day' => 'required|integer',
+//        'province_id' => 'required|integer',
+//        'district' => 'required|integer',
+//        'ward' => 'required|integer',
+//        'note' => 'required|string|max:255',
 //        'created_at' => 'required',
 //        'updated_at' => 'required'
     ];
 
+    public function diagnosis()
+    {
+        return $this->hasMany(Diagnosis::class, 'patient_id', 'id');
+    }
 
+    public function payments()
+    {
+        return $this->hasMany(Payments::class, 'patient_id', 'id');
+    }
 }

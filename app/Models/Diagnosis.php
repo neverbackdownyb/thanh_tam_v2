@@ -77,5 +77,13 @@ class Diagnosis extends Model
         'updated_at' => 'required'
     ];
 
+    public function partient()
+    {
+        return $this->hasOne(Partients::class, 'id', 'patient_id');
+    }
 
+    public function payments()
+    {
+        return $this->hasOne(Payments::class,  'patient_id', 'patient_id');
+    }
 }

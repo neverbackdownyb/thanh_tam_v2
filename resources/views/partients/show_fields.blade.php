@@ -1,54 +1,36 @@
-<!-- Phone Field -->
-<div class="col-sm-12">
-    {!! Form::label('phone', 'Phone:') !!}
-    <p>{{ $partients->phone }}</p>
-</div>
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th scope="col">STT</th>
+        <th scope="col">Chuẩn đoán</th>
+        <th scope="col">Tổng tiền</th>
+        <th scope="col">Đã Thanh toán</th>
+        <th scope="col">Hình thức</th>
+        <th scope="col">Ghi chú</th>
+        <th scope="col">Thời gian</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    $payments = $partients->payments;
 
-<!-- Name Field -->
-<div class="col-sm-12">
-    {!! Form::label('name', 'Name:') !!}
-    <p>{{ $partients->name }}</p>
-</div>
-
-<!-- Status Field -->
-<div class="col-sm-12">
-    {!! Form::label('status', 'Status:') !!}
-    <p>{{ $partients->status }}</p>
-</div>
-
-<!-- Avatar Field -->
-<div class="col-sm-12">
-    {!! Form::label('avatar', 'Avatar:') !!}
-    <p>{{ $partients->avatar }}</p>
-</div>
-
-<!-- Birth Day Field -->
-<div class="col-sm-12">
-    {!! Form::label('birth_day', 'Birth Day:') !!}
-    <p>{{ $partients->birth_day }}</p>
-</div>
-
-<!-- Province Id Field -->
-<div class="col-sm-12">
-    {!! Form::label('province_id', 'Province Id:') !!}
-    <p>{{ $partients->province_id }}</p>
-</div>
-
-<!-- District Field -->
-<div class="col-sm-12">
-    {!! Form::label('district', 'District:') !!}
-    <p>{{ $partients->district }}</p>
-</div>
-
-<!-- Ward Field -->
-<div class="col-sm-12">
-    {!! Form::label('ward', 'Ward:') !!}
-    <p>{{ $partients->ward }}</p>
-</div>
-
-<!-- Note Field -->
-<div class="col-sm-12">
-    {!! Form::label('note', 'Note:') !!}
-    <p>{{ $partients->note }}</p>
-</div>
-
+    ?>
+    @if($payments->isEmpty())
+        <tr>
+            <th scope="row">Chưa có lịch sử thanh toán nào</th>
+        </tr>
+    @else
+        @foreach($payments as  $key => $item)
+        <tr>
+            <th scope="row">Lần {!! $key + 1 !!}</th>
+            <td>{{ $item->diagnosis->name ?? '' }}</td>
+            <td>{{ number_format($item->diagnosis->total_amount) }}</td>
+            <td>{{ number_format($item->total_money) }}</td>
+            <td>{{ \App\Models\Payments::$listPaymentType[$item->type] }}</td>
+            <td>{{  $item->note }}</td>
+            <td>{{ $item->created_at }}</td>
+        </tr>
+        @endforeach
+    @endif
+    </tbody>
+</table>

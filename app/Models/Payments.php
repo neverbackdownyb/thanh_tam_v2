@@ -25,16 +25,23 @@ class Payments extends Model
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
 
+    const HINH_THUC_TIEN_MAT = 0;
+    const HINH_THUC_CHUYEN_KHOAN = 1;
+    public static $listPaymentType = [
+        self::HINH_THUC_TIEN_MAT => 'Tiền Mặt',
+        self::HINH_THUC_CHUYEN_KHOAN => 'Chuyển Khoản'
+    ];
 
     protected $dates = ['deleted_at'];
 
 
 
     public $fillable = [
-        'treatment_id',
+        'diagnosis_id',
         'type',
         'total_money',
-        'note'
+        'note',
+        'patient_id'
     ];
 
     /**
@@ -64,5 +71,8 @@ class Payments extends Model
         'updated_at' => 'required'
     ];
 
-
+    public function diagnosis()
+    {
+        return $this->hasOne(Diagnosis::class, 'id', 'diagnosis_id');
+    }
 }

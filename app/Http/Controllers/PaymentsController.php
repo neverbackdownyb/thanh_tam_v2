@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreatePaymentsRequest;
 use App\Http\Requests\UpdatePaymentsRequest;
+use App\Models\Payments;
 use App\Repositories\PaymentsRepository;
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
@@ -152,5 +153,36 @@ class PaymentsController extends AppBaseController
         Flash::success('Payments deleted successfully.');
 
         return redirect(route('payments.index'));
+    }
+
+    public function ajaxAddPayment(Request $request) {
+       $paymentType = $request->input('paymentType', '');
+       $diagnosisId = $request->input('diagnosisId', '');
+       $note = $request->input('note', '');
+       $partientId = $request->input('partientId', '');
+       $totalPaid = $request->input('totalPaid', '');
+
+       if( !is_numeric($paymentType) || empty($diagnosisId || empty($partientId)) || empty($totalPaid)) {
+           $result = [
+               'status' => 0,
+               'message' => 'Thông tin đầu vào  không đúng. Vui lòng kiểm tra lại',
+               'data' => []
+           ];
+       }else{
+            $data = [
+                'diagnosis_id' => $diagnosisId,
+                'type' => $paymentType,
+                'total_money' => $totalPaid,
+                'note'=> $note,
+                'patient_id' => $partientId
+            ];
+            Payments::create($data);
+           $result = [
+               'status' => 1,
+               'message' => "Đã lưu lại lịch sử thanh toán",
+               'data' => []
+           ];
+       }
+        return response()->json($result);
     }
 }

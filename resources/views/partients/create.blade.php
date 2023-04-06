@@ -5,7 +5,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-12">
-                    <h1>Create Partients</h1>
+                    <h1>Thêm thông tin người bệnh</h1>
                 </div>
             </div>
         </div>
@@ -22,7 +22,7 @@
             <div class="card-body">
 
                 <div class="row">
-                    @include('partients.fields')
+                    @include('partients.fields_v2')
                 </div>
 
             </div>

@@ -4,15 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreatePartientsRequest;
 use App\Http\Requests\UpdatePartientsRequest;
+use App\Models\Diagnosis;
+use App\Models\Partients;
+use App\Models\Payments;
+use App\Models\Services;
+use App\Models\Treatments;
 use App\Repositories\PartientsRepository;
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
 use Flash;
+use Illuminate\Support\Facades\DB;
 use Response;
 
 class PartientsController extends AppBaseController
 {
-    /** @var PartientsRepository $partientsRepository*/
+    /** @var PartientsRepository $partientsRepository */
     private $partientsRepository;
 
     public function __construct(PartientsRepository $partientsRepo)
@@ -29,7 +35,9 @@ class PartientsController extends AppBaseController
      */
     public function index(Request $request)
     {
-        $partients = $this->partientsRepository->paginate(50);
+        $partients = $this
+            ->partientsRepository
+            ->paginate(50);
 
         return view('partients.index')
             ->with('partients', $partients);
@@ -42,7 +50,13 @@ class PartientsController extends AppBaseController
      */
     public function create()
     {
-        return view('partients.create');
+        $service = Services::where('status', 0)->get();
+
+        return view('partients.create')->with(
+            [
+                'services' => $service
+            ]
+        );
     }
 
     /**
@@ -55,13 +69,79 @@ class PartientsController extends AppBaseController
     public function store(CreatePartientsRequest $request)
     {
         $input = $request->all();
+        $phone = $input['phone'];
+        $partient = Partients::where('phone', $phone)->first();
+        DB::beginTransaction();
+        try {
+            if (!empty($partient)) {
+                $patientId = $partient->id;
+            } else {
+                $dataCreateUser = [
+                    'phone' => $phone,
+                    'status' => 1,
+                    'name' => $input['name'],
+                    'birth_day' => $input['birth_day'],
+                ];
+                $patientId = $this->partientsRepository->create($dataCreateUser)->id ?? 0;
+            }
 
-        $partients = $this->partientsRepository->create($input);
+            if ($patientId == 0) {
+                Flash::error('Tạo thông tin người bệnh bị lỗi.');
+                return redirect(route('partients.index'));
 
-        Flash::success('Partients saved successfully.');
+            }
 
-        return redirect(route('partients.index'));
+            $dataDiagnosis = [
+                'name' => $input['diagnosis'],
+                'total_amount' => $input['summary'],
+                'total_paid' => $input['total_paid'],
+                'patient_id' => $patientId,
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
+            $diagnosis = Diagnosis::create($dataDiagnosis);
+            $diagnosiId = $diagnosis->id;
+
+            $dataTreatment = [];
+            $services = $input['service'];
+            $price = $input['price'];
+            $quality = $input['quality'];
+
+            for ($i = 0; $i < count($input['service']); $i++) {
+                $dataTreatment[] = [
+                    'diagnosis_id' => $diagnosiId,
+                    'service_id' => $services[$i],
+                    'unit_price' => $price[$i],
+                    'quality' => $quality[$i],
+                    'patient_id' => $patientId
+                ];
+            }
+
+            Treatments::insert($dataTreatment);
+
+            $payment = [
+                'diagnosis_id' => $diagnosiId,
+                'type' => $input['payment-type'],
+                'total_money' => $input['total_paid'],
+                'patient_id' => $patientId,
+                'note' => $input['note']
+            ];
+            Payments::create($payment);
+            DB::commit();
+
+            Flash::success('Partients saved successfully.');
+
+            return redirect(route('partients.index'));
+
+        } catch (\Exception $exception) {
+//            DB::commit();
+            DB::rollback();
+
+            dd($exception);
+        }
+
     }
+
 
     /**
      * Display the specified Partients.
@@ -72,15 +152,33 @@ class PartientsController extends AppBaseController
      */
     public function show($id)
     {
+        $totalAmount = 0;
+        $totalPaid = 0;
         $partients = $this->partientsRepository->find($id);
+        $diagnosis = Diagnosis::where('patient_id', $id)
+            ->get();
+        $totalAmount = $diagnosis->sum('total_amount');
+
+        $payments = Payments::where('patient_id', $id)
+            ->get();
+
+        foreach ($payments as $item) {
+            $totalPaid += $item->total_money;
+        }
+
 
         if (empty($partients)) {
-            Flash::error('Partients not found');
+            Flash::error('Partients not found 4');
 
             return redirect(route('partients.index'));
         }
 
-        return view('partients.show')->with('partients', $partients);
+        return view('partients.show')->with([
+            'partients' => $partients,
+            'diagnosis' => $diagnosis,
+            'totalAmount' => $totalAmount,
+            'totalPaid' => $totalPaid
+        ]);
     }
 
     /**
@@ -116,14 +214,14 @@ class PartientsController extends AppBaseController
         $partients = $this->partientsRepository->find($id);
 
         if (empty($partients)) {
-            Flash::error('Partients not found');
+            Flash::error('Partients not found 1');
 
             return redirect(route('partients.index'));
         }
 
         $partients = $this->partientsRepository->update($request->all(), $id);
 
-        Flash::success('Partients updated successfully.');
+        Flash::success('Cập nhật thông tin người bênh thành công.');
 
         return redirect(route('partients.index'));
     }
@@ -133,16 +231,19 @@ class PartientsController extends AppBaseController
      *
      * @param int $id
      *
+     * @return Response
      * @throws \Exception
      *
-     * @return Response
      */
     public function destroy($id)
     {
+        Flash::error('Không có quyền xóa');
+
+        return redirect(route('partients.index'));
         $partients = $this->partientsRepository->find($id);
 
         if (empty($partients)) {
-            Flash::error('Partients not found');
+            Flash::error('Partients not found 2');
 
             return redirect(route('partients.index'));
         }
@@ -152,5 +253,12 @@ class PartientsController extends AppBaseController
         Flash::success('Partients deleted successfully.');
 
         return redirect(route('partients.index'));
+    }
+
+    public function history($id)
+    {
+       $history = Diagnosis::where('patient_id', $id)->get();
+       return view('partients.show_history')->with('history', $history);
+
     }
 }

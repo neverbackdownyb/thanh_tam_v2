@@ -2,42 +2,64 @@
     <table class="table" id="partients-table">
         <thead>
         <tr>
-            <th>Phone</th>
-        <th>Name</th>
-        <th>Status</th>
-        <th>Avatar</th>
-        <th>Birth Day</th>
-        <th>Province Id</th>
-        <th>District</th>
-        <th>Ward</th>
-        <th>Note</th>
-            <th colspan="3">Action</th>
+            <th>STT</th>
+            <th>Họ Tên</th>
+            <th>Số điện thoại</th>
+            <th>Tổng tiền phải trả</th>
+            <th>Còn nợ</th>
+            <th>Ngày khám gần nhất</th>
+            <th>Lịch hẹn gần nhất</th>
+            <th colspan="3">Thao tác</th>
         </tr>
         </thead>
         <tbody>
-        @foreach($partients as $partients)
+        @foreach($partients as $key => $item)
+             <?php
+             $totalPaid = 0;
+             $payments = $item->payments;
+
+             foreach ($payments as $paymentItem) {
+                 $totalPaid += $paymentItem->total_money;
+             }
+                 $totalAmount = ($item->diagnosis->sum('total_amount'));
+             $lastChange =1 ;
+                 $lastChange = !empty($item->diagnosis->last()) ? $item->diagnosis->last()->created_at : $item->created_at;
+             ?>
             <tr>
-                <td>{{ $partients->phone }}</td>
-            <td>{{ $partients->name }}</td>
-            <td>{{ $partients->status }}</td>
-            <td>{{ $partients->avatar }}</td>
-            <td>{{ $partients->birth_day }}</td>
-            <td>{{ $partients->province_id }}</td>
-            <td>{{ $partients->district }}</td>
-            <td>{{ $partients->ward }}</td>
-            <td>{{ $partients->note }}</td>
+                <td>{{ $key  + 1 }}</td>
+                <td>{{ $item->name }}</td>
+                <td>{{ $item->phone }}</td>
+
+                <td>{{ number_format($totalAmount) }}</td>
+                <td>{{  number_format($totalAmount - $totalPaid) }}</td>
+
+                <td>{{ $lastChange }}</td>
+                <td>{{ $lastChange }}</td>
                 <td width="120">
-                    {!! Form::open(['route' => ['partients.destroy', $partients->id], 'method' => 'delete']) !!}
+                    {!! Form::open(['route' => ['partients.destroy', $item->id], 'method' => 'delete']) !!}
                     <div class='btn-group'>
-                        <a href="{{ route('partients.show', [$partients->id]) }}"
-                           class='btn btn-default btn-xs'>
-                            <i class="far fa-eye"></i>
+                        <a  target="_blank" href="{{ route('partients.show', [$item->id]) }}"
+                           class='btn btn-default btn-xs'
+                           data-toggle="tooltip" data-placement="left" title="Lịch sử thanh toán"
+                        >
+                            <i class="fa fa-university" aria-hidden="true"></i>
+
                         </a>
-                        <a href="{{ route('partients.edit', [$partients->id]) }}"
-                           class='btn btn-default btn-xs'>
+
+                       <a  target="_blank" href="{{ route('partients.history', [$item->id]) }}"
+                           class='btn btn-default btn-xs'
+                          data-toggle="tooltip" data-placement="top" title="Lịch sử khám bệnh"
+                       >
+                            <i class="fa fa-history"></i>
+                        </a>
+
+                        <a   target="_blank" href="{{ route('partients.edit', [$item->id]) }}"
+                           class='btn btn-default btn-xs'
+                           data-placement="top" title="Cập nhật thông tin"
+                        >
                             <i class="far fa-edit"></i>
                         </a>
-                        {!! Form::button('<i class="far fa-trash-alt"></i>', ['type' => 'submit', 'class' => 'btn btn-danger btn-xs', 'onclick' => "return confirm('Are you sure?')"]) !!}
+{{--                        {!! Form::button('<i class="far fa-trash-alt"></i>', ['type' => 'submit', 'class' => 'btn btn-danger btn-xs', 'onclick' => "return confirm('Are you sure?')"]) !!}--}}
                     </div>
                     {!! Form::close() !!}
                 </td>

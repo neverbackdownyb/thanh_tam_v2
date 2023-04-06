@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateServicesRequest;
 use App\Http\Requests\UpdateServicesRequest;
+use App\Models\Services;
 use App\Repositories\ServicesRepository;
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
@@ -152,5 +153,23 @@ class ServicesController extends AppBaseController
         Flash::success('Services deleted successfully.');
 
         return redirect(route('services.index'));
+    }
+
+    public function ajaxGetServiceInfo(Request $request) {
+        $id = $request->id ?? 0;
+        return Services::find($id);
+    }
+
+    public function ajaxAppendService(Request $request) {
+        $id = $request->id ?? 0;
+        $service = Services::where('status', 0)->get();
+
+        $returnHTML = view('services.ajax-append-service')
+            ->with([
+                'id' => $id,
+                "services" => $service
+            ])->render();
+
+        return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
 }
