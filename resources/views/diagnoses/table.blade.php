@@ -2,41 +2,23 @@
     <table class="table" id="diagnoses-table">
         <thead>
         <tr>
-            <th>Name</th>
-        <th>Dentist</th>
-        <th>Note</th>
-        <th>Total Amount</th>
-        <th>Total Paid</th>
-        <th>Patient Id</th>
-        <th>Status</th>
-            <th colspan="3">Action</th>
+        <th>STT</th>
+        <th>Người bệnh</th>
+        <th>Chuẩn đoán</th>
+        <th>Tổng tiền</th>
+        <th>Đã trả</th>
+        <th>Thời gian</th>
         </tr>
         </thead>
         <tbody>
-        @foreach($diagnoses as $diagnosis)
+        @foreach($diagnoses as $key => $diagnosis)
             <tr>
-                <td>{{ $diagnosis->name }}</td>
-            <td>{{ $diagnosis->dentist }}</td>
-            <td>{{ $diagnosis->note }}</td>
+                <td>{{ $key + 1 }}</td>
+                <td>{{ $diagnosis->partient->name }}</td>
+            <td>{{ $diagnosis->name }}</td>
             <td>{{ $diagnosis->total_amount }}</td>
             <td>{{ $diagnosis->total_paid }}</td>
-            <td>{{ $diagnosis->patient_id }}</td>
-            <td>{{ $diagnosis->status }}</td>
-                <td width="120">
-                    {!! Form::open(['route' => ['diagnoses.destroy', $diagnosis->id], 'method' => 'delete']) !!}
-                    <div class='btn-group'>
-                        <a href="{{ route('diagnoses.show', [$diagnosis->id]) }}"
-                           class='btn btn-default btn-xs'>
-                            <i class="far fa-eye"></i>
-                        </a>
-                        <a href="{{ route('diagnoses.edit', [$diagnosis->id]) }}"
-                           class='btn btn-default btn-xs'>
-                            <i class="far fa-edit"></i>
-                        </a>
-                        {!! Form::button('<i class="far fa-trash-alt"></i>', ['type' => 'submit', 'class' => 'btn btn-danger btn-xs', 'onclick' => "return confirm('Are you sure?')"]) !!}
-                    </div>
-                    {!! Form::close() !!}
-                </td>
+            <td>{{ $diagnosis->created_at }}</td>
             </tr>
         @endforeach
         </tbody>

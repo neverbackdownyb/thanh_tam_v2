@@ -35,16 +35,16 @@
 </div>
 
 
-<div class="form-group col-sm-12">
+<div class="form-group col-sm-12 table-responsive">
     {!! Form::label('note', 'Điều trị:') !!}
 
-    <table class="table table-bordered" name="selectedService[]">
+    <table style="overflow-x:auto;" class="table table-bordered" name="selectedService[]">
         <thead>
         <tr>
             <th scope="col">Dịch vụ</th>
-            <th scope="col">Giá tiền</th>
-            <th scope="col">Số lượng</th>
-            <th scope="col">Tổng tiền</th>
+            <th scope="col">Giá tiền </th>
+            <th scope="col">SL</th>
+            <th scope="col">Tổng</th>
         </tr>
         </thead>
         <tbody class="append">
@@ -56,6 +56,15 @@
                         <option value="{{ $item->id }}"> {{ $item->name }} </option>
                     @endforeach
                 </select>
+
+                <div class="row" style="display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px; padding: 0 8px"
+                >
+                    <i style="flex: auto" class="fa fa-plus" aria-hidden="true" id="add-new-0" onclick="addNew(0)"></i>
+                    <i class="fa fa-trash" aria-hidden="true" onclick="remove(0)"></i>
+                </div>
             </th>
             <td>
                 <input step="10000" id="price-0" type="number" name="price[]" class="form-control"
@@ -68,10 +77,7 @@
             <td>
                 <input readonly id="total-money-0" type="number" class="form-control">
             </td>
-            <td>
-                <i class="fa fa-plus" aria-hidden="true" id="add-new-0" onclick="addNew(0)"></i>
-                <i class="fa fa-trash" aria-hidden="true" onclick="remove(0)"></i>
-            </td>
+
         </tr>
         </tbody>
     </table>

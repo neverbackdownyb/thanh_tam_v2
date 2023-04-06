@@ -75,4 +75,9 @@ class Payments extends Model
     {
         return $this->hasOne(Diagnosis::class, 'id', 'diagnosis_id');
     }
+
+    public function patient()
+    {
+        return $this->hasOne(Partients::class, 'id', 'patient_id');
+    }
 }

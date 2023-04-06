@@ -25,6 +25,12 @@ class Services extends Model
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
 
+    const STATUS_ACTIVE = 1;
+    const STATUS_HIDE = 0;
+    public static $arrayStatus = [
+        self::STATUS_ACTIVE => 'Hoạt động',
+        self::STATUS_HIDE => 'Tạm ẩn',
+    ];
 
     protected $dates = ['deleted_at'];
 

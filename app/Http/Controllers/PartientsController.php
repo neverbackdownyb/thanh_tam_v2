@@ -50,7 +50,7 @@ class PartientsController extends AppBaseController
      */
     public function create()
     {
-        $service = Services::where('status', 0)->get();
+        $service = Services::where('status', Services::STATUS_ACTIVE)->get();
 
         return view('partients.create')->with(
             [

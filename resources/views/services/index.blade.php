@@ -5,14 +5,16 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Services</h1>
+                    <h1>Danh sách Dịch vụ</h1>
                 </div>
-                <div class="col-sm-6">
-                    <a class="btn btn-primary float-right"
-                       href="{{ route('services.create') }}">
-                        Add New
-                    </a>
-                </div>
+            </div>
+        </div>
+        <div class="row container-fluid">
+            <div class="col-sm-6">
+                <a class="btn btn-primary float-left"
+                   href="{{ route('services.create') }}">
+                    Thêm mới
+                </a>
             </div>
         </div>
     </section>

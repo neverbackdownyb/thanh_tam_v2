@@ -4,7 +4,25 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
       integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw=="
       crossorigin="anonymous"
-      referrerpolicy="no-referrer" />
+      referrerpolicy="no-referrer"/>
+<style>
+    .scrollable-table {
+        overflow-x: auto;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: .25em;
+        border: 1px solid darkgrey;
+    }
+
+    body {
+        margin: 2em;
+    }
+</style>
 
 @section('content')
     <section class="content-header">
@@ -13,12 +31,15 @@
                 <div class="col-sm-6">
                     <h1>Quản lý người bệnh</h1>
                 </div>
-                <div class="col-sm-6">
-                    <a class="btn btn-primary float-right"
-                       href="{{ route('partients.create') }}">
-                       Thêm mới
-                    </a>
-                </div>
+
+            </div>
+        </div>
+        <div class="row container-fluid">
+            <div class="col-sm-6 ">
+                <a class="btn btn-primary float-left"
+                   href="{{ route('partients.create') }}">
+                    Thêm mới
+                </a>
             </div>
         </div>
     </section>

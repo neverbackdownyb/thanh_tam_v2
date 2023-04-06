@@ -5,13 +5,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Payments</h1>
-                </div>
-                <div class="col-sm-6">
-                    <a class="btn btn-primary float-right"
-                       href="{{ route('payments.create') }}">
-                        Add New
-                    </a>
+                    <h1>Lịch sử thanh toán</h1>
                 </div>
             </div>
         </div>

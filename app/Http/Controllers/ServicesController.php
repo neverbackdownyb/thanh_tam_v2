@@ -59,7 +59,7 @@ class ServicesController extends AppBaseController
 
         $services = $this->servicesRepository->create($input);
 
-        Flash::success('Services saved successfully.');
+        Flash::success('Thêm mới dịch vụ thành công.');
 
         return redirect(route('services.index'));
     }
@@ -124,7 +124,7 @@ class ServicesController extends AppBaseController
 
         $services = $this->servicesRepository->update($request->all(), $id);
 
-        Flash::success('Services updated successfully.');
+        Flash::success('Cập nhật thông tin dịch vụ thành công.');
 
         return redirect(route('services.index'));
     }
@@ -162,7 +162,7 @@ class ServicesController extends AppBaseController
 
     public function ajaxAppendService(Request $request) {
         $id = $request->id ?? 0;
-        $service = Services::where('status', 0)->get();
+        $service = Services::where('status', Services::STATUS_ACTIVE)->get();
 
         $returnHTML = view('services.ajax-append-service')
             ->with([
