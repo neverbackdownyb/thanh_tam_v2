@@ -41,7 +41,8 @@ class Diagnosis extends Model
         'total_amount',
         'total_paid',
         'patient_id',
-        'status'
+        'status',
+        'schedule'
     ];
 
     /**

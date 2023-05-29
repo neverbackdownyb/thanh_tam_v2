@@ -95,6 +95,7 @@ class PartientsController extends AppBaseController
                 'name' => $input['diagnosis'],
                 'total_amount' => $input['summary'],
                 'total_paid' => $input['total_paid'],
+                'schedule' => $input['schedule'],
                 'patient_id' => $patientId,
                 'created_at' => now(),
                 'updated_at' => now()
