@@ -31,6 +31,7 @@ Route::middleware([
 Route::get('ajax-get-service-info',[\App\Http\Controllers\ServicesController::class, 'ajaxGetServiceInfo'])->name('ajax_get_service_info');
 Route::get('ajax-append-service',[\App\Http\Controllers\ServicesController::class, 'ajaxAppendService'])->name('ajax_append_service');
 Route::get('ajax-add-payment',[\App\Http\Controllers\PaymentsController::class, 'ajaxAddPayment'])->name('ajax_add_payment');
+Route::get('ajax-get-customer-by-phone',[\App\Http\Controllers\PartientsController::class, 'ajaxGetCustomerByPhone'])->name('ajax_get_customer_by_phone');
 
 Auth::routes();
 

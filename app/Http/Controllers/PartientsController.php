@@ -262,4 +262,22 @@ class PartientsController extends AppBaseController
        return view('partients.show_history')->with('history', $history);
 
     }
+
+    public function ajaxGetCustomerByPhone(Request $request) {
+        $phone = $request->get('phone');
+        $users = Partients::select('id', 'phone', 'birth_day', 'name', 'province_id')->where('phone', 'like', "%$phone%")->limit(10)->get();
+        $result = [];
+
+        foreach ($users as $item) {
+            $result[] = [
+                'id' => $item['id'],
+                'phone' => $item['phone'],
+                'birth_day' => $item['birth_day'],
+                'name' => $item['phone'] . ' - '. $item['name'],
+                'full_name' => $item['name'],
+                'province_id' => $item['province_id']
+            ];
+        }
+        return $result;
+    }
 }

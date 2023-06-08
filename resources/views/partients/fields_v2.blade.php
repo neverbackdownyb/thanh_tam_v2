@@ -1,13 +1,14 @@
-<!-- Name Field -->
-<div class="form-group col-sm-6">
-    {!! Form::label('name', 'Họ tên:') !!}
-    {!! Form::text('name', null, ['class' => 'form-control','maxlength' => 255,'maxlength' => 255]) !!}
-</div>
 
 <!-- Phone Field -->
 <div class="form-group col-sm-6">
     {!! Form::label('phone', 'Số điện thoại:') !!}
-    {!! Form::text('phone', null, ['class' => 'form-control','maxlength' => 255,'maxlength' => 255]) !!}
+    <select class="select2 col-sm-12" id="phone" name="phone"></select>
+</div>
+
+<!-- Name Field -->
+<div class="form-group col-sm-6">
+    {!! Form::label('name', 'Họ tên:') !!}
+    {!! Form::text('name', null, ['class' => 'form-control','maxlength' => 255,'maxlength' => 255]) !!}
 </div>
 
 <!-- Birth Day Field -->
@@ -33,7 +34,6 @@
     {!! Form::label('schedule', 'Lịch hẹn tái khám:') !!}
     {!! Form::text('schedule', null, ['class' => 'form-control']) !!}
 </div>
-
 
 @if(1== 2)
 <div class="form-group col-sm-12 table-responsive">
@@ -194,9 +194,78 @@
     </div>
 </div>
 
+
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
 <script>
+
+
+    $(document).ready(function() {
+        $('.select2').select2({
+            tags: true,
+            tokenSeparators: [',', ' ']
+        });
+
+        $('#phone').select2({
+            placeholder: 'Nhập số điện thoại',
+            ajax: {
+                url: '/ajax-get-customer-by-phone',
+                dataType: 'json',
+                delay: 150,
+                data: function(params) {
+                    return {
+                        phone: params.term
+                    };
+                },
+                processResults: function(data) {
+                    var users = data.map(function(user) {
+                        return {
+                            id: user.id,
+                            text: user.name,
+                            full_name: user.full_name,
+                            birth_day: user.birth_day,
+                            province_id : user.province_id
+                        };
+                    });
+
+                    return {
+                        results: users
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            maximumInputLength : 10,
+            tags: true,
+
+        });
+
+        $('#phone').on('select2:select', function(e) {
+            var selectedUser = e.params.data;
+            $('#name').val(selectedUser.full_name);
+            $('#province_id').val(selectedUser.province_id);
+            $('#birth_day').val(selectedUser.birth_day);
+        });
+    });
+
+    create = {
+        changePhoneNumber(phone) {
+            $.ajax('/ajax-get-customer-by-phone', {
+                type: 'GET',
+                data: {phone},
+                success: function (res) {
+                    var element = `<ul class="select2-results__options" role="listbox" id="select2-phone-results" aria-expanded="true" aria-hidden="false"><li class="select2-results__option select2-results__option--selectable select2-results__option--highlighted" role="option" data-select2-id="select2-data-77-o39p" aria-selected="true">3434</li></ul>`
+
+                    $("#phone").append(element).append(res)
+
+                },
+                error: function (e) {
+
+                }
+            });
+        }
+    }
+
     function addNew(currentId) {
         var id = currentId + 1;
         $.ajax(
@@ -223,7 +292,6 @@
         $('#total-money-' + key).val(price * quality);
         calcTotalMoney();
     }
-
     function calcTotalMoney() {
         let sum = 0;
         for (let i = 0; i < 30; i++) {
@@ -269,5 +337,7 @@
         $('.data-' + key).remove();
         calcTotalMoney();
     }
+
+
 
 </script>
