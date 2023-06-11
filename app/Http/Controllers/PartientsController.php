@@ -51,10 +51,15 @@ class PartientsController extends AppBaseController
     public function create()
     {
         $service = Services::where('status', Services::STATUS_ACTIVE)->get();
+        $province = [
+            1=> "YB",
+            2=> 'HN'
+        ];
 
         return view('partients.create')->with(
             [
-                'services' => $service
+                'services' => $service,
+                'province' => $province
             ]
         );
     }
@@ -75,6 +80,11 @@ class PartientsController extends AppBaseController
         try {
             if (!empty($partient)) {
                 $patientId = $partient->id;
+                $partient = Partients::find($patientId);
+                $partient->birth_day = $input['birth_day'];
+                $partient->name = $input['name'];
+                $partient->save();
+
             } else {
                 $dataCreateUser = [
                     'phone' => $phone,
@@ -264,8 +274,15 @@ class PartientsController extends AppBaseController
     }
 
     public function ajaxGetCustomerByPhone(Request $request) {
-        $phone = $request->get('phone');
-        $users = Partients::select('id', 'phone', 'birth_day', 'name', 'province_id')->where('phone', 'like', "%$phone%")->limit(10)->get();
+        $phone = $request->get('phone', 0);
+        $limit = 10;
+
+        if(!is_numeric($phone)) {
+            $users = Partients::select('id', 'phone', 'birth_day', 'name', 'province_id')->where('name', 'like', "%$phone%")->limit($limit)->get();
+
+        }else {
+            $users = Partients::select('id', 'phone', 'birth_day', 'name', 'province_id')->where('phone', 'like', "%$phone%")->limit($limit)->get();
+        }
         $result = [];
 
         foreach ($users as $item) {

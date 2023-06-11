@@ -60,7 +60,7 @@ class Partients extends Model
         'name' => 'string',
         'status' => 'string',
         'avatar' => 'string',
-        'birth_day' => 'integer',
+        'birth_day' => 'string',
         'province_id' => 'integer',
         'district' => 'integer',
         'ward' => 'integer',

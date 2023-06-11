@@ -23,7 +23,10 @@
              }
                  $totalAmount = ($item->diagnosis->sum('total_amount'));
              $lastChange =1 ;
+
                  $lastChange = !empty($item->diagnosis->last()) ? $item->diagnosis->last()->created_at : $item->created_at;
+
+                 $schedule = !empty($item->diagnosis->last()) ? $item->diagnosis->last()->schedule : $item->schedule;
              ?>
             <tr>
                 <td>{{ $key  + 1 }}</td>
@@ -34,7 +37,7 @@
                 <td>{{  number_format($totalAmount - $totalPaid) }}</td>
 
                 <td>{{ $lastChange }}</td>
-                <td>{{ $lastChange }}</td>
+                <td>{{  $schedule }}</td>
                 <td width="120">
                     {!! Form::open(['route' => ['partients.destroy', $item->id], 'method' => 'delete']) !!}
                     <div class='btn-group'>
