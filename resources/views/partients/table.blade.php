@@ -6,6 +6,7 @@
             <th>Họ Tên</th>
             <th>Số điện thoại</th>
             <th>Tổng tiền phải trả</th>
+            <th>Đã trả</th>
             <th>Còn nợ</th>
             <th>Ngày khám gần nhất</th>
             <th>Lịch hẹn gần nhất</th>
@@ -32,7 +33,9 @@
                 <td>{{ $item->phone }}</td>
 
                 <td>{{ number_format($totalAmount) }}</td>
-                <td>{{  number_format($totalAmount - $totalPaid) }}</td>
+                <td>{{ number_format($totalPaid) }}</td>
+
+                <td style="@if($totalAmount - $totalPaid > 500000) color: red @endif">{{  number_format($totalAmount - $totalPaid) }}</td>
 
                 <td>{{ $lastChange }}</td>
                 <td>{{  $schedule }}</td>
@@ -60,7 +63,6 @@
                         >
                             <i class="far fa-edit"></i>
                         </a>
-{{--                        {!! Form::button('<i class="far fa-trash-alt"></i>', ['type' => 'submit', 'class' => 'btn btn-danger btn-xs', 'onclick' => "return confirm('Are you sure?')"]) !!}--}}
                     </div>
                     {!! Form::close() !!}
                 </td>

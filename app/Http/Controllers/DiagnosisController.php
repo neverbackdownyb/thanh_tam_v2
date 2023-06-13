@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateDiagnosisRequest;
 use App\Http\Requests\UpdateDiagnosisRequest;
+use App\Models\Diagnosis;
+use App\Models\Partients;
 use App\Repositories\DiagnosisRepository;
 use App\Http\Controllers\AppBaseController;
+use App\Services\ProvinceService;
 use Illuminate\Http\Request;
 use Flash;
 use Response;
@@ -29,10 +32,38 @@ class DiagnosisController extends AppBaseController
      */
     public function index(Request $request)
     {
-        $diagnoses = $this->diagnosisRepository->paginate(50);
+
+        $phone = $request->input('phone', '');
+        $name = $request->input('name', '');
+        $provinceId  = $request->input('province_id', '');
+
+        $province = (new ProvinceService())->getAllProvince();
+
+        $query = Diagnosis::query()->select('diagnosis.*')
+        ->join('partients', 'partients.id' , '=', 'diagnosis.patient_id');
+
+        if (!empty($phone)) {
+            $query->where('phone', 'LIKE', "%$phone%");
+        }
+
+        if (!empty($name)) {
+            $query->where('partients.name', 'LIKE', "%$name%");
+        }
+
+        if (!empty($provinceId)) {
+            $query->where('partients.province_id', $provinceId);
+        }
+
+        $diagnoses = $query->orderByDesc('diagnosis.updated_at')->paginate(50);
 
         return view('diagnoses.index')
-            ->with('diagnoses', $diagnoses);
+            ->with([
+                'diagnoses' => $diagnoses,
+                'province' => $province,
+                'phoneSelected' => $phone,
+                'nameSelected' => $name,
+                'provinceIdSelected' => $provinceId
+            ]);
     }
 
     /**

@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Partients extends Model
 {
    // use SoftDeletes;
+    public $timestamps = true;
 
     use HasFactory;
 
@@ -32,10 +33,7 @@ class Partients extends Model
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
 
-
-    protected $dates = ['deleted_at'];
-
-
+//    protected $dates = ['deleted_at'];
 
     public $fillable = [
         'phone',
@@ -46,7 +44,8 @@ class Partients extends Model
         'province_id',
         'district',
         'ward',
-        'note'
+        'note',
+        'updated_at'
     ];
 
     /**
@@ -64,7 +63,8 @@ class Partients extends Model
         'province_id' => 'integer',
         'district' => 'integer',
         'ward' => 'integer',
-        'note' => 'string'
+        'note' => 'string',
+        'updated_at' => 'timestamp'
     ];
 
     /**

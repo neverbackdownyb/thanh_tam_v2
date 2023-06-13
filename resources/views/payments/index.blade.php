@@ -9,6 +9,29 @@
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <form>
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label for="phone">Số điện thoại</label>
+                            <input type="text" value="{{ $phoneSelected }}" name='phone' class="form-control"
+                                   id="phone"
+                                   placeholder="Nhập vào SĐT">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="name">Họ Tên</label>
+                            <input type="text" value="{{ $nameSelected }}" name='name' class="form-control"
+                                   id="name" placeholder="Họ tên">
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                </form>
+            </div>
+        </div>
     </section>
 
     <div class="content px-3">

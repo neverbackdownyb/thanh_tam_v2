@@ -14,6 +14,37 @@
 {{--                    </a>--}}
 {{--                </div>--}}
             </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <form>
+                        <div class="form-row">
+                            <div class="form-group col-md-3">
+                                <label for="phone">Số điện thoại</label>
+                                <input type="text" value="{{ $phoneSelected }}" name='phone' class="form-control"
+                                       id="phone"
+                                       placeholder="Nhập vào SĐT">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="name">Họ Tên</label>
+                                <input type="text" value="{{ $nameSelected }}" name='name' class="form-control"
+                                       id="name" placeholder="Họ tên">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="name">Quê Quán</label>
+                                <select class="select2 form-control selectProvince" name="province_id" id="province">
+                                    <option value="">--Chọn quê quán --</option>
+                                    @foreach($province as $item)
+                                        <option @if($provinceIdSelected == $item->province_id) selected
+                                                @endif value="{{ $item->province_id }}"> {{ $item->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </section>
 

@@ -10,13 +10,13 @@
         </tr>
         </thead>
         <tbody>
-        @foreach($payments as $key => $payments)
+        @foreach($payments as $key => $item)
             <tr>
                 <td> {{ $key + 1 }}</td>
-                <td>{{ $payments->patient->name }}</td>
-                <td>{{ number_format($payments->total_money) }}</td>
-                <td>{{ \App\Models\Payments::$listPaymentType[$payments->type] }}</td>
-                <td>{{ $payments->created_at }}</td>
+                <td>{{ $item->patient->name }}</td>
+                <td>{{ number_format($item->total_money) }}</td>
+                <td>{{ \App\Models\Payments::$listPaymentType[$item->type] }}</td>
+                <td>{{ $item->created_at }}</td>
                 {{--  <td width="120">
                       {!! Form::open(['route' => ['payments.destroy', $payments->id], 'method' => 'delete']) !!}
                       <div class='btn-group'>

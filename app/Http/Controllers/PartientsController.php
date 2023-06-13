@@ -38,12 +38,36 @@ class PartientsController extends AppBaseController
      */
     public function index(Request $request)
     {
-        $partients = $this
-            ->partientsRepository
-            ->paginate(50);
+        $phone = $request->input('phone', '');
+        $name = $request->input('name', '');
+        $provinceId  = $request->input('province_id', '');
+
+        $province = (new ProvinceService())->getAllProvince();
+
+        $query = Partients::query();
+
+        if (!empty($phone)) {
+            $query->where('phone', 'LIKE', "%$phone%");
+        }
+
+        if (!empty($name)) {
+            $query->where('name', 'LIKE', "%$name%");
+        }
+
+        if (!empty($provinceId)) {
+            $query->where('province_id', $provinceId);
+        }
+
+        $partients = $query->orderByDesc('updated_at')->paginate(10);
 
         return view('partients.index')
-            ->with('partients', $partients);
+            ->with([
+                'partients'=> $partients,
+                'province' => $province,
+                'phoneSelected' => $phone,
+                'nameSelected' => $name,
+                'provinceIdSelected' => $provinceId
+            ]);
     }
 
     /**
@@ -86,8 +110,8 @@ class PartientsController extends AppBaseController
                 $partient->province_id = $input['province_id'];
                 $partient->district = $input['district_id'];
                 $partient->ward = $input['ward_id'];
+                $partient->updated_at = now();
                 $partient->save();
-
             } else {
                 $dataCreateUser = [
                     'phone' => $phone,
@@ -135,7 +159,6 @@ class PartientsController extends AppBaseController
             }
 
             Treatments::insert($dataTreatment);
-
             $payment = [
                 'diagnosis_id' => $diagnosiId,
                 'type' => $input['payment-type'],
@@ -146,14 +169,12 @@ class PartientsController extends AppBaseController
             Payments::create($payment);
             DB::commit();
 
-            Flash::success('Partients saved successfully.');
+            Flash::success('Lưu thông tin bệnh nhân thành công.');
 
             return redirect(route('partients.index'));
 
         } catch (\Exception $exception) {
-//            DB::commit();
             DB::rollback();
-
             dd($exception);
         }
 

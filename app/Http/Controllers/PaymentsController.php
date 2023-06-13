@@ -30,10 +30,31 @@ class PaymentsController extends AppBaseController
      */
     public function index(Request $request)
     {
-        $payments = $this->paymentsRepository->paginate(50);
+        $phone = $request->input('phone', '');
+        $name = $request->input('name', '');
+        $provinceId  = $request->input('province_id', '');
+
+        $query = Payments::query()->select('payments.*')
+            ->join('partients', 'partients.id' , '=', 'payments.patient_id');
+
+        if (!empty($phone)) {
+            $query->where('partients.phone', 'LIKE', "%$phone%");
+        }
+
+        if (!empty($name)) {
+            $query->where('partients.name', 'LIKE', "%$name%");
+        }
+
+        $payments = $query->orderByDesc('payments.created_at')
+            ->paginate(50);
 
         return view('payments.index')
-            ->with('payments', $payments);
+            ->with([
+                'payments' => $payments,
+                'phoneSelected' => $phone,
+                'nameSelected' => $name,
+                'provinceIdSelected' => $provinceId
+            ]);
     }
 
     /**
