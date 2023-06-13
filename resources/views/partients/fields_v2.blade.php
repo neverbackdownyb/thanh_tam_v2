@@ -1,4 +1,17 @@
 
+<style>
+    @media  screen and (max-width: 800px) {
+        input.form-control {
+            width: auto;
+        }
+
+        select.form-control {
+            width: auto;
+        }
+    }
+
+</style>
+
 <!-- Phone Field -->
 <div class="form-group col-sm-6">
     {!! Form::label('phone', 'Số điện thoại:') !!}
@@ -21,16 +34,25 @@
 </div>
 <!-- Province Id Field -->
 <div class="form-group col-sm-6">
-    {!! Form::label('province_id', 'Địa chỉ:') !!}
-
-    <select class="select2 col-sm-12" id="province_id" name="phone">
-        @foreach($province as $provinceId => $name)
-            <option value="{!! $provinceId !!}"> {!! $name !!}</option>
+    {!! Form::label('province_id', 'Thành phố:') !!}
+    <select class="selectProvince col-sm-12" id="province_id" name="province_id" onchange="create.changeProvince()">
+        @foreach($province as $item)
+            <option {{--{!! $item->province_id == $provinceId ? 'selected' : '' !!}--}} value="{{ $item->province_id }}"> {!! $item->name !!}</option>
         @endforeach
     </select>
+</div>
 
+<!-- Province Id Field -->
+<div class="form-group col-sm-6">
+    {!! Form::label('district_id', 'Quận Huyện:') !!}
+    <select class="selectDistrict col-sm-12" id="district_id" name="district_id" onchange="create.changeDistrict()"> </select>
+</div>
 
-{{--    {!! Form::select('', [ 13 => 'Yên Bái', 1 => 'Hà Nội'], ['class' => 'form-control']) !!}--}}
+<!-- Province Id Field -->
+<div class="form-group col-sm-6">
+    {!! Form::label('ward_id', 'Phường xã:') !!}
+    <select class="selectWard col-sm-12" id="ward_id" name="ward_id">
+    </select>
 </div>
 
 <!-- Province Id Field -->
@@ -136,6 +158,14 @@
             tokenSeparators: [',', ' ']
         });
 
+        $('.selectProvince').select2({
+            tags: false,
+        });
+
+       $('.selectWard').select2({
+            tags: false,
+        });
+
         $('#phone').select2({
             placeholder: 'Nhập tên hoặc số điện thoại',
             ajax: {
@@ -143,7 +173,6 @@
                 dataType: 'json',
                 delay: 150,
                 data: function(params) {
-                    console.log(params)
                     return {
                         phone: params.term
                     };
@@ -156,46 +185,130 @@
                             phone: user.phone,
                             full_name: user.full_name,
                             birth_day: user.birth_day,
-                            province_id : user.province_id
+                            province_id : user.province_id,
+                            district: user.district,
+                            ward :user.ward
                         };
                     });
                     return {
                         results: users
                     };
                 },
-                cache: false
+                cache: true
             },
             minimumInputLength: 2,
             maximumInputLength : 10,
             tags: true,
-
         });
+
+        $('#district_id').select2({
+            placeholder: 'Nhập tên quận huyện',
+        })
+
+        create.setProvince(10)
+        create.getAllDistrict(10)
 
         $('#phone').on('select2:select', function(e) {
             var selectedUser = e.params.data;
             $('#name').val(selectedUser.full_name);
-            $('#province_id').val(selectedUser.province_id);
+
+            if(typeof selectedUser.province_id != "undefined") {
+                create.setProvince(selectedUser.province_id)
+                create.getAllDistrict(selectedUser.province_id, selectedUser.district)
+                create.getAllWard(selectedUser.district, selectedUser.ward)
+            }
             $('#birth_day').val(selectedUser.birth_day);
         });
+
     });
 
     create = {
-        changePhoneNumber(phone) {
-            $.ajax('/ajax-get-customer-by-phone', {
-                type: 'GET',
-                data: {phone},
-                success: function (res) {
-                    var element = `<ul class="select2-results__options" role="listbox" id="select2-phone-results" aria-expanded="true" aria-hidden="false"><li class="select2-results__option select2-results__option--selectable select2-results__option--highlighted" role="option" data-select2-id="select2-data-77-o39p" aria-selected="true">3434</li></ul>`
+        setProvince(provinceId) {
+            $('#province_id').val(provinceId);
 
-                    $("#phone").append(element).append(res)
+            $('.selectProvince').select2({
+                tags: false
+            });
+        },
+
+        setDistrict(districtId) {
+            $("#district_id").val(districtId)
+
+            $('.selectDistrict').select2({
+                tags: false
+            });
+        },
+
+        setWard(wardId) {
+            $("#ward_id").val(wardId)
+
+            $('.selectWard').select2({
+                tags: false
+            });
+        },
+
+        changeProvince() {
+            var provinceId= $('#province_id').val();
+            $('#district_id').val(0);
+            $('#ward_id').val(0);
+            this.getAllDistrict(provinceId)
+            this.changeDistrict();
+        },
+
+        changeDistrict() {
+            var districtId= $('#district_id').val();
+            this.getAllWard(districtId)
+        },
+
+        getAllDistrict(provinceId, districtId) {
+            $.ajax( '{{ route('ajax_district_by_province') }}', {
+                type: 'GET',
+                data: {provinceId},
+                success: function (response) {
+                    // Xóa tất cả các option hiện tại
+                    var districts = response;
+                    var districtSelect = $('#district_id');
+
+                    districtSelect.empty();
+                    // Thêm các option mới từ danh sách quận huyện
+                    for (var i = 0; i < districts.length; i++) {
+                        districtSelect.append('<option value="' + districts[i].district_id + '">' + districts[i].name + '</option>');
+                    }
+
 
                 },
-                error: function (e) {
-
-                }
+                complete: function() {
+                    if(typeof districtId != "undefined") {
+                        create.setDistrict(districtId)
+                    } else {
+                        var districtDefaultId = $('#district_id').val();
+                        create.getAllWard(districtDefaultId)
+                    }
+                 }
             });
-        }
+    }, getAllWard(district, ward) {
+            $.ajax( '{{ route('ajax_get_all_ward_by_district') }}', {
+                type: 'GET',
+                data: {district},
+                success: function (response) {
+                    // Xóa tất cả các option hiện tại
+                    var ward = response;
+                    var wardSelect = $('#ward_id');
+                    wardSelect.empty();
+                    // Thêm các option mới từ danh sách quận huyện
+                    for (var i = 0; i < ward.length; i++) {
+                        wardSelect.append('<option value="' + ward[i].wards_id + '">' + ward[i].name + '</option>');
+                    }
+                },
+                complete: function() {
+                    if(typeof ward != "undefined") {
+                        create.setWard(ward)
+                    }
+                 }
+            });
     }
+    }
+
 
     function addNew(currentId) {
         var id = currentId + 1;

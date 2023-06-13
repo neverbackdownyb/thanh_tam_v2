@@ -22,11 +22,9 @@
                  $totalPaid += $paymentItem->total_money;
              }
                  $totalAmount = ($item->diagnosis->sum('total_amount'));
-             $lastChange =1 ;
-
                  $lastChange = !empty($item->diagnosis->last()) ? $item->diagnosis->last()->created_at : $item->created_at;
-
-                 $schedule = !empty($item->diagnosis->last()) ? $item->diagnosis->last()->schedule : $item->schedule;
+                 $scheduleItem = $item->diagnosis->sortByDesc('schedule')->first();
+                 $schedule = $scheduleItem->schedule;
              ?>
             <tr>
                 <td>{{ $key  + 1 }}</td>

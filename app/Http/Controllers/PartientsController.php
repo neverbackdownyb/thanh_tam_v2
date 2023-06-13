@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreatePartientsRequest;
 use App\Http\Requests\UpdatePartientsRequest;
 use App\Models\Diagnosis;
+use App\Models\District;
 use App\Models\Partients;
 use App\Models\Payments;
 use App\Models\Services;
 use App\Models\Treatments;
+use App\Models\Wards;
 use App\Repositories\PartientsRepository;
 use App\Http\Controllers\AppBaseController;
+use App\Services\ProvinceService;
 use Illuminate\Http\Request;
 use Flash;
 use Illuminate\Support\Facades\DB;
@@ -51,15 +54,12 @@ class PartientsController extends AppBaseController
     public function create()
     {
         $service = Services::where('status', Services::STATUS_ACTIVE)->get();
-        $province = [
-            1=> "YB",
-            2=> 'HN'
-        ];
+        $province = (new ProvinceService())->getAllProvince();
 
         return view('partients.create')->with(
             [
                 'services' => $service,
-                'province' => $province
+                'province' => $province,
             ]
         );
     }
@@ -83,6 +83,9 @@ class PartientsController extends AppBaseController
                 $partient = Partients::find($patientId);
                 $partient->birth_day = $input['birth_day'];
                 $partient->name = $input['name'];
+                $partient->province_id = $input['province_id'];
+                $partient->district = $input['district_id'];
+                $partient->ward = $input['ward_id'];
                 $partient->save();
 
             } else {
@@ -91,6 +94,9 @@ class PartientsController extends AppBaseController
                     'status' => 1,
                     'name' => $input['name'],
                     'birth_day' => $input['birth_day'],
+                    'province_id' => $input['province_id'],
+                    'district' => $input['district_id'],
+                    'ward' => $input['ward_id']
                 ];
                 $patientId = $this->partientsRepository->create($dataCreateUser)->id ?? 0;
             }
@@ -273,15 +279,28 @@ class PartientsController extends AppBaseController
 
     }
 
+    public function ajaxGetDistrictByProvince(Request $request) {
+        $provinceId = $request->get('provinceId' , 0);
+        $result = District::query()->where('province_id', $provinceId)->get();
+        return $result;
+    }
+
+    public function ajaxGetAllWardByDistrict(Request $request) {
+        $districtId = $request->get('district' , 0);
+
+        $result = Wards::query()->where('district_id', $districtId)->get();
+        return $result;
+    }
+
     public function ajaxGetCustomerByPhone(Request $request) {
         $phone = $request->get('phone', 0);
         $limit = 10;
 
         if(!is_numeric($phone)) {
-            $users = Partients::select('id', 'phone', 'birth_day', 'name', 'province_id')->where('name', 'like', "%$phone%")->limit($limit)->get();
+            $users = Partients::select('id', 'phone', 'birth_day', 'name', 'province_id', 'district', 'ward')->where('name', 'like', "%$phone%")->limit($limit)->get();
 
         }else {
-            $users = Partients::select('id', 'phone', 'birth_day', 'name', 'province_id')->where('phone', 'like', "%$phone%")->limit($limit)->get();
+            $users = Partients::select('id', 'phone', 'birth_day', 'name', 'province_id', 'district', 'ward')->where('phone', 'like', "%$phone%")->limit($limit)->get();
         }
         $result = [];
 
@@ -292,7 +311,9 @@ class PartientsController extends AppBaseController
                 'birth_day' => $item['birth_day'],
                 'name' => $item['phone'] . ' - '. $item['name'],
                 'full_name' => $item['name'],
-                'province_id' => $item['province_id']
+                'province_id' => $item['province_id'],
+                'district' => $item['district'],
+                'ward' => $item['ward']
             ];
         }
         return $result;

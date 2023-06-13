@@ -32,6 +32,8 @@ Route::get('ajax-get-service-info',[\App\Http\Controllers\ServicesController::cl
 Route::get('ajax-append-service',[\App\Http\Controllers\ServicesController::class, 'ajaxAppendService'])->name('ajax_append_service');
 Route::get('ajax-add-payment',[\App\Http\Controllers\PaymentsController::class, 'ajaxAddPayment'])->name('ajax_add_payment');
 Route::get('ajax-get-customer-by-phone',[\App\Http\Controllers\PartientsController::class, 'ajaxGetCustomerByPhone'])->name('ajax_get_customer_by_phone');
+Route::get('ajax-get-district-by-province',[\App\Http\Controllers\PartientsController::class, 'ajaxGetDistrictByProvince'])->name('ajax_district_by_province');
+Route::get('ajax-get-all-ward-by-district',[\App\Http\Controllers\PartientsController::class, 'ajaxGetAllWardByDistrict'])->name('ajax_get_all_ward_by_district');
 
 Auth::routes();
 
