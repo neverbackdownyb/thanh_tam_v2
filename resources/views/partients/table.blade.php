@@ -26,16 +26,22 @@
                  $lastChange = !empty($item->diagnosis->last()) ? $item->diagnosis->last()->created_at : $item->created_at;
                  $scheduleItem = $item->diagnosis->sortByDesc('schedule')->first();
                  $schedule = $scheduleItem->schedule;
+
+                 $province =trim($item->province->name)  ?? '';
+                 $district = $item->districtItem->name ?? '';
+                 $ward = $item->wardItem->name ?? '';
+                 $userName =  "<b> $item->name </b>" . " - ($ward - $district - $province)";
+
              ?>
             <tr>
                 <td>{{ $key  + 1 }}</td>
-                <td>{{ $item->name }}</td>
+                <td>{!! $userName !!}  </td>
                 <td>{{ $item->phone }}</td>
 
                 <td>{{ number_format($totalAmount) }}</td>
                 <td>{{ number_format($totalPaid) }}</td>
 
-                <td style="@if($totalAmount - $totalPaid > 500000) color: red @endif">{{  number_format($totalAmount - $totalPaid) }}</td>
+                <td style="@if($totalAmount - $totalPaid > 0) color: red @endif">{{  number_format($totalAmount - $totalPaid) }}</td>
 
                 <td>{{ $lastChange }}</td>
                 <td>{{  $schedule }}</td>

@@ -95,4 +95,20 @@ class Partients extends Model
     {
         return $this->hasMany(Payments::class, 'patient_id', 'id');
     }
+
+    public function province()
+    {
+        return $this->hasOne(Province::class, 'province_id', 'province_id');
+    }
+
+    public function districtItem()
+    {
+        return $this->hasOne(District::class, 'district_id', 'district');
+    }
+
+    public function wardItem()
+    {
+        return $this->hasOne(Wards::class, 'wards_id', 'ward');
+    }
+
 }
